@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using WebSocketSharp;
 
 namespace StockExchange
 {
@@ -35,10 +36,13 @@ namespace StockExchange
             {
                 Form1 form = new Form1();
                 form.label5.Text += login;
-                form.Show();
-                form.InitalizeStocks();
                 form.InitializeWallet(login, sql.Get_cash(login));
+                const string host = "ws://webtask.future-processing.com:8068/ws/stocks";
+                WebSocket client = new WebSocket(host);
+                client.Connect();
+                client.OnMessage +=(ss,ee)=>MessageBox.Show("");
                 this.Hide();
+                form.Show();
             }
             else
             {
@@ -49,6 +53,7 @@ namespace StockExchange
         private void signup_btn_Click(object sender, EventArgs e)
         {
             SignUp form = new SignUp();
+            
             form.Show();
             this.Hide();
         }

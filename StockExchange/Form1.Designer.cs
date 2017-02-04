@@ -226,9 +226,9 @@
             this.cash.AutoSize = true;
             this.cash.Location = new System.Drawing.Point(882, 374);
             this.cash.Name = "cash";
-            this.cash.Size = new System.Drawing.Size(90, 13);
+            this.cash.Size = new System.Drawing.Size(82, 13);
             this.cash.TabIndex = 12;
-            this.cash.Text = "Avaliable money: ";
+            this.cash.Text = "Avaliable cash: ";
             // 
             // Form1
             // 
@@ -246,7 +246,7 @@
             this.Controls.Add(this.groupBox3);
             this.Name = "Form1";
             this.Text = "Form1";
-            this.Load += new System.EventHandler(this.Form1_Load);
+//            this.Load += new System.EventHandler(this.Form1_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.groupBox3.ResumeLayout(false);

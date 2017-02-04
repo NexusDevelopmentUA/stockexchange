@@ -22,7 +22,7 @@ namespace StockExchange
         {
             Add_Shares form = new Add_Shares(int.Parse(count_txt.Text), login_txt.Text, pass_txt.Text, cash_txt.Text);
             form.Show();
-            this.Hide();
+            this.Close();
         }
     }
 }

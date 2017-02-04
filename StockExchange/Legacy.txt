@@ -1,0 +1,60 @@
+﻿//private void AddNewStock(Company data)
+        //{
+        //    Label company_name = new Label();
+        //    Label value = new Label();
+        //    Button buy_btn = new Button();
+        //    buy_btn.Click += Buy_btn_Click;
+        //    GetData gdata = new GetData();
+        //    //List<Company> companies = new List<Company>();
+
+        //    company_name.Text = data.Name;
+        //    value.Text = data.Price.ToString();//need to round to 2 digits after point
+        //    buy_btn.Text = "Buy";
+        //    Stocks_panel.Controls.Add(company_name);
+        //    Stocks_panel.Controls.Add(value);
+        //    Stocks_panel.Controls.Add(buy_btn);
+        //}
+
+        //private void AddNewShare(Shares share)
+        //{
+        //    wallet_company_name = new Label();
+        //    unit_price = new Label();
+        //    amount = new Label();
+        //    wallet_value = new Label();
+        //    sell_btn = new Button();
+        //    sell_btn.Click += Sell_btn_Click;
+        //    GetData gdata = new GetData();
+        //    List<Company> companies = new List<Company>();
+
+        //    var data = gdata.download();
+        //    var item = data["items"];
+
+        //    foreach (var j in item)
+        //    {
+        //        Company company = j.ToObject<Company>();
+        //        companies.Add(company);
+        //    }
+
+        //    company_name.Text = share.Company_name;
+        //    amount.Text = share.Amount.ToString();
+        //    sell_btn.Text = "sell";
+
+        //    foreach(var i in companies)
+        //    {
+        //        string temp1, temp2;
+        //        temp1 = i.Name.Replace(" ","");
+        //        temp2 = share.Company_name.Replace(" ", "");
+        //        if(temp1==temp2)
+        //        {
+        //            unit_price.Text = i.Price.ToString();
+        //            value.Text = (share.Amount * i.Price).ToString();
+        //            break;
+        //        }
+        //    }
+
+        //    Wallet_panel.Controls.Add(company_name);
+        //    Wallet_panel.Controls.Add(unit_price);
+        //    Wallet_panel.Controls.Add(amount);
+        //    Wallet_panel.Controls.Add(value);
+        //    Wallet_panel.Controls.Add(sell_btn);
+        //}

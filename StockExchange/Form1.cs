@@ -1,116 +1,172 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
 using WebSocketSharp;
+using System.Threading;
 
 namespace StockExchange
 {
     public partial class Form1 : Form
     {
-        SQL_repository sql = new SQL_repository();
+        private Thread thread;
+        delegate void StockArgReturningVoidDelegate(Label company_name, Label value, Button buy);
+        delegate void UpdateArgReturningVoidDelegate();
 
-        private WebSocket client;
+        //Arrays of controls for stocks
+        Label[] stocks_company_name;
+        Label[] stocks_value;
+        int[] stocks_unit;
+        Button[] buy_btn;
+
+        //Array of controls for wallet
+        Label[] wallet_company_name;
+        Label[] unit_price;
+        Label[] amount;
+        Label[] wallet_value;
+        Button[] sell_btn;
+
+        SQL_repository sql = new SQL_repository();
         const string host = "ws://webtask.future-processing.com:8068/ws/stocks";
+        private WebSocket client;
 
         public Form1()
         {
+            string raw_data="";
+
             InitializeComponent();
+            //this.Load() += new EventHandler(Form1_Load);
+            client = new WebSocket(host);
+            client.Connect();
+            client.OnMessage += Client_OnMessage;
+            client.OnError += (ss, ee) => Console.WriteLine(ee.Message);
+            thread = new Thread(() => Update_Stocks(Get_data(raw_data)));
+            thread.Start();
         }
-     
-        public void InitalizeStocks()
+
+        private void Client_OnMessage(object sender, MessageEventArgs e)
         {
-            GetData variable = new GetData();
-            var data = variable.download();
-            var item = data["items"];
-            List<Company> companies = new List<Company>();
-            foreach (var j in item)
+            Console.WriteLine(e.Data);
+        }
+
+        private void InitalizeStocks(List<Company> _companies)
+        {
+            
+            stocks_company_name = new Label[_companies.Count];
+            stocks_value = new Label[_companies.Count];
+            buy_btn = new Button[_companies.Count];
+            stocks_unit = new int[_companies.Count];
+            int i = 0;
+
+            foreach (var item in _companies)
             {
-                Company company = j.ToObject<Company>();
-                companies.Add(company);
+                stocks_company_name[i] = new Label();
+                stocks_value[i] = new Label();
+                buy_btn[i] = new Button();
+
+                //AddNewStock(item);
+                stocks_company_name[i].Text = item.Name;
+                stocks_value[i].Text = item.Price.ToString();//need to round to 2 digits after point
+                stocks_unit[i] = item.Unit;
+                buy_btn[i].Text = "Buy";
+                buy_btn[i].Click += Buy_btn_Click;
+                AddNewStock(stocks_company_name[i], stocks_value[i], buy_btn[i]);
+                //Stocks_panel.Controls.Add(stocks_company_name[i]);
+                //Stocks_panel.Controls.Add(stocks_value[i]);
+                //Stocks_panel.Controls.Add(buy_btn[i]);
+
+                i++;
             }
-            foreach (var i in companies)
+        }
+
+        private void AddNewStock(Label company_name, Label value, Button buy)
+        {
+            if(Stocks_panel.InvokeRequired)
             {
-                AddNewStock(i);
+                StockArgReturningVoidDelegate d = new StockArgReturningVoidDelegate(AddNewStock);
+                this.Invoke(d, new object[] { company_name, value, buy });
+            }
+            else
+            {
+                Stocks_panel.Controls.Add(company_name);
+                Stocks_panel.Controls.Add(value);
+                Stocks_panel.Controls.Add(buy);
+            }
+        }
+
+        private void Update_Stocks(List<Company> _companies)
+        {
+            int i = 0;
+            foreach(var item in _companies)
+            {
+                stocks_company_name[i].Text = item.Name;
+                stocks_value[i].Text = item.Price.ToString();
+                stocks_unit[i] = item.Unit;
             }
         }
 
         public void InitializeWallet(string login, string cash)
         {
             List<Shares> wallet = sql.Get_Shares(login);
-            foreach (var item in wallet)
-            {
-                AddNewShare(item);
-            }
-            this.cash.Text += cash + " PLN";
-        }
-        private void AddNewStock(Company data)
-        {
-            Label company_name = new Label();
-            Label value = new Label();
-            Button buy_btn = new Button();
-            buy_btn.Click += Buy_btn_Click;
+            wallet_company_name = new Label[wallet.Count];
+            unit_price = new Label[wallet.Count];
+            amount = new Label[wallet.Count];
+            wallet_value = new Label[wallet.Count];
+            sell_btn = new Button[wallet.Count];
             GetData gdata = new GetData();
             List<Company> companies = new List<Company>();
+            int i = 0;
 
-            company_name.Text = data.Name;
-            value.Text = data.Price.ToString();//need to round to 2 digits after point
-            buy_btn.Text = "Buy";
-            Stocks_panel.Controls.Add(company_name);
-            Stocks_panel.Controls.Add(value);
-            Stocks_panel.Controls.Add(buy_btn);
-        }
-
-        private void AddNewShare(Shares share)
-        {
-            Label company_name = new Label();
-            Label unit_price = new Label();
-            Label amount = new Label();
-            Label value = new Label();
-            Button sell_btn = new Button();
-            sell_btn.Click += Sell_btn_Click;
-            GetData gdata = new GetData();
-            List<Company> companies = new List<Company>();
+            //getting data using HTTP protocol
             var data = gdata.download();
             var item = data["items"];
-
+            
             foreach (var j in item)
             {
                 Company company = j.ToObject<Company>();
                 companies.Add(company);
             }
-            company_name.Text = share.Company_name;
-            amount.Text = share.Amount.ToString();
-            sell_btn.Text = "sell";
-            foreach(var i in companies)
+            
+            foreach (var share in wallet)//getting controls into panel
             {
-                string temp1, temp2;
-                temp1 = i.Name.Replace(" ","");
-                temp2 = share.Company_name.Replace(" ", "");
-                if(temp1==temp2)
+                //AddNewShare(item);
+                wallet_company_name[i] = new Label();
+                amount[i] = new Label();
+                sell_btn[i] = new Button();
+                unit_price[i] = new Label();
+                wallet_value[i] = new Label();
+
+                wallet_company_name[i].Text = share.Company_name;
+                amount[i].Text = share.Amount.ToString();
+                sell_btn[i].Text = "sell";
+
+                foreach (var c in companies)//getting the newest price of shares
                 {
-                    unit_price.Text = i.Price.ToString();
-                    value.Text = (share.Amount * i.Price).ToString();
-                    break;
+                    string temp1, temp2;
+                    temp1 = c.Name.Replace(" ", "");
+                    temp2 = share.Company_name.Replace(" ", "");
+                    if (temp1 == temp2)
+                    {
+                        unit_price[i].Text = c.Price.ToString();
+                        wallet_value[i].Text = (share.Amount * c.Price).ToString();
+                        break;
+                    }
                 }
+                Wallet_panel.Controls.Add(wallet_company_name[i]);
+                Wallet_panel.Controls.Add(unit_price[i]);
+                Wallet_panel.Controls.Add(amount[i]);
+                Wallet_panel.Controls.Add(wallet_value[i]);
+                Wallet_panel.Controls.Add(sell_btn[i]);
+                sell_btn[i].Click += Sell_btn_Click;
+
+                i++;
             }
-            Wallet_panel.Controls.Add(company_name);
-            Wallet_panel.Controls.Add(unit_price);
-            Wallet_panel.Controls.Add(amount);
-            Wallet_panel.Controls.Add(value);
-            Wallet_panel.Controls.Add(sell_btn);
+            this.cash.Text += cash + " PLN";
         }
 
         private void Sell_btn_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("");//buy shares
+            MessageBox.Show(sender.ToString());//sell shares
         }
 
         private void Buy_btn_Click(object sender, EventArgs e)
@@ -127,16 +183,25 @@ namespace StockExchange
         private void log_out_btn_Click(object sender, EventArgs e)
         {
             Auth form = new Auth();
-            this.Hide();
+
+            client.Close();
+            this.Close();
             form.Show();
         }
 
-        private void Form1_Load(object sender, EventArgs e)
+        private List<Company> Get_data(string data)
         {
-            client = new WebSocket(host);
-            client.Connect();
-            client.OnMessage += (ss, ee) =>
-              MessageBox.Show(ee.Data);
+            JObject jdata = JObject.Parse(data);
+            var item = jdata["Items"];
+            List<Company> companies = new List<Company>();
+            foreach (var j in item)
+            {
+                Company company = j.ToObject<Company>();
+                companies.Add(company);
+            }
+            return companies;
         }
+
+        
     }
 }
