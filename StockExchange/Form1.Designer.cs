@@ -45,6 +45,7 @@
             this.label6 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.cash = new System.Windows.Forms.Label();
+            this.button1 = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.SuspendLayout();
@@ -226,15 +227,26 @@
             this.cash.AutoSize = true;
             this.cash.Location = new System.Drawing.Point(882, 374);
             this.cash.Name = "cash";
-            this.cash.Size = new System.Drawing.Size(82, 13);
+            this.cash.Size = new System.Drawing.Size(90, 13);
             this.cash.TabIndex = 12;
-            this.cash.Text = "Avaliable cash: ";
+            this.cash.Text = "Avaliable money: ";
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(555, 167);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 13;
+            this.button1.Text = "button1";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1266, 399);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.cash);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.label4);
@@ -246,7 +258,6 @@
             this.Controls.Add(this.groupBox3);
             this.Name = "Form1";
             this.Text = "Form1";
-//            this.Load += new System.EventHandler(this.Form1_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.groupBox3.ResumeLayout(false);
@@ -274,6 +285,7 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button new_acc_login_btn;
         private System.Windows.Forms.Label cash;
+        private System.Windows.Forms.Button button1;
     }
 }
 

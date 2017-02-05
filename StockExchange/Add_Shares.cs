@@ -50,9 +50,8 @@ namespace StockExchange
             sql.SignUp(login, pass, cash, wallet);
 
             Form1 form = new Form1();
-            form.InitializeWallet(login, cash);
             form.Show();
-            this.Close();
+            this.Hide();
         }
     }
 }

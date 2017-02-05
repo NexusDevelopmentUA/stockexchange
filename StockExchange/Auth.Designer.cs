@@ -101,7 +101,6 @@
             this.Controls.Add(this.login_txt);
             this.Name = "Auth";
             this.Text = "Authorisation";
-            this.Load += new System.EventHandler(this.Auth_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 
