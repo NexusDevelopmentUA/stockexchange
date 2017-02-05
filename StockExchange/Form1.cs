@@ -11,6 +11,7 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using WebSocketSharp;
 using System.Threading;
+using System.Globalization;
 
 namespace StockExchange
 {
@@ -18,6 +19,7 @@ namespace StockExchange
     {
         private Thread thread;
         delegate void StockArgReturningVoidDelegate(Label company_name, Label value, Button buy, int row);//initialising stocks
+        delegate void WalletArgReturningVoidDelegate(Label company_name, Label value, Label amount, Label unit_price, Button sell);//initialising wallet
         delegate void UpdateStockArgReturningVoidDelegate(List<Company> companies);//updating stocks when get new values from server
         delegate void UpdateWalletValueArgReturnVoidDelegate();//update wallet value when updating shares values
         delegate void UpdateWalletArgReturnVoidDelegate();//update all wallet after sell operation
@@ -41,6 +43,7 @@ namespace StockExchange
         const string host = "ws://webtask.future-processing.com:8068/ws/stocks";
         bool initialized = false;
         List<Company> _companies;
+        List<Shares> wallet;
         string raw_companies_data;
 
         public Form1()
@@ -64,7 +67,9 @@ namespace StockExchange
             }
             else
             {
-                thread = new Thread(() => Update_Stocks(Get_data(e.Data)));
+                thread = new Thread(() => Update_Stocks(Get_data(e.Data)));//updating stocks
+                thread.Start();
+                thread = new Thread(() => Update_wallet_value());//updating wallet values
                 thread.Start();
             }
         }
@@ -89,23 +94,50 @@ namespace StockExchange
                 stocks_unit[i] = item.Unit;
                 buy_btn[i].Text = "Buy";
                 buy_btn[i].Click += Buy_btn_Click;
-                AddNewStock(stocks_company_name[i], stocks_value[i], buy_btn[i], i); //calling method to add new contorls on tableviewpanel for stocks
+                AddNewStock(stocks_company_name[i], stocks_value[i], buy_btn[i], i); //calling method to add new contorls for each stock on tableviewpanel
                 i++;
             }
+            DateTime time = DateTime.Now;
+            update_time.Text = time.Hour.ToString() +":"+ time.Minute.ToString() + ":" + time.Second.ToString();
             initialized = true;
         }
-        //need to initialze wallet inside form 1, not auth
         public void InitializeWallet(string login, string cash) // initialise wallet with data from DB
         {
-            List<Shares> wallet = sql.Get_Shares(login);
+            wallet = sql.Get_Shares(login);
             wallet_company_name = new Label[_companies.Count];
             unit_price = new Label[_companies.Count];
             amount = new Label[_companies.Count];
             wallet_value = new Label[_companies.Count];
+            sell_btn = new Button[_companies.Count];
+            int i = 0;
 
             foreach (var item in wallet)
             {
-                AddNewShare(item); //calling method to add new 
+                wallet_company_name[i] = new Label();
+                unit_price[i] = new Label();
+                amount[i] = new Label();
+                wallet_value[i] = new Label();
+                sell_btn[i] = new Button();
+
+                sell_btn[i].Click += Sell_btn_Click;
+                wallet_company_name[i].Text = item.Company_name;
+                amount[i].Text = item.Amount.ToString();
+                sell_btn[i].Text = "Sell";
+
+                foreach (var c in _companies)
+                {
+                    string temp1, temp2;
+                    temp1 = c.Name.Replace(" ", "");//removing free spaces from database varchar values
+                    temp2 = item.Company_name.Replace(" ", "");
+                    if (temp1 == temp2)
+                    {
+                        unit_price[i].Text = c.Price.ToString();
+                        wallet_value[i].Text = (item.Amount * c.Price).ToString();
+                        break;
+                    }
+                }
+                AddNewShare(wallet_company_name[i], wallet_value[i], amount[i], unit_price[i], sell_btn[i]); //calling method to add new contorls for each share package in tableviewpanel
+                i++;
             }
             this.cash.Text += cash + " PLN";
         }
@@ -137,60 +169,70 @@ namespace StockExchange
 
                 foreach (var item in _companies)
                 {
-                    stocks_company_name[i].Text = item.Name;
                     stocks_value[i].Text = item.Price.ToString();//need to round to 2 digits after point
                     stocks_unit[i] = item.Unit;
-                    buy_btn[i].Text = "Buy";
-                    buy_btn[i].Click += Buy_btn_Click;
-                    AddNewStock(stocks_company_name[i], stocks_value[i], buy_btn[i], i);
                     i++;
                 }
+                DateTime time = DateTime.Now;
+                update_time.Text = time.Hour.ToString() + ":" + time.Minute.ToString() + ":" + time.Second.ToString();
             }
         }
 
         private void Update_wallet_value()
         {
-            
-        }
-
-        private void AddNewShare(Shares share)
-        {
-            Label company_name = new Label();
-            Label unit_price = new Label();
-            Label amount = new Label();
-            Label value = new Label();
-            Button sell_btn = new Button();
-            sell_btn.Click += Sell_btn_Click;
-            company_name.Text = share.Company_name;
-            amount.Text = share.Amount.ToString();
-            sell_btn.Text = "sell";
-            foreach(var i in _companies)
+           if(Wallet_panel.InvokeRequired)
             {
-                string temp1, temp2;
-                temp1 = i.Name.Replace(" ","");
-                temp2 = share.Company_name.Replace(" ", "");
-                if(temp1==temp2)
+                UpdateWalletValueArgReturnVoidDelegate d = new UpdateWalletValueArgReturnVoidDelegate(Update_wallet_value);
+                this.Invoke(d, new object[] { });
+            } 
+           else
+            {
+                int i = 0;
+                foreach (var item in wallet)
                 {
-                    unit_price.Text = i.Price.ToString();
-                    value.Text = (share.Amount * i.Price).ToString();
-                    break;
+                    foreach (var c in _companies)
+                    {
+                        string temp1, temp2;
+                        temp1 = c.Name.Replace(" ", "");//removing free spaces from database varchar values
+                        temp2 = item.Company_name.Replace(" ", "");
+                        if (temp1 == temp2)
+                        {
+                            unit_price[i].Text = c.Price.ToString();
+                            wallet_value[i].Text = (item.Amount * c.Price).ToString();
+                            break;
+                        }
+                    }
+                    i++;
                 }
             }
-            Wallet_panel.Controls.Add(company_name);
-            Wallet_panel.Controls.Add(unit_price);
-            Wallet_panel.Controls.Add(amount);
-            Wallet_panel.Controls.Add(value);
-            Wallet_panel.Controls.Add(sell_btn);
+        }
+
+        private void AddNewShare(Label company_name, Label value, Label amount, Label unit_price, Button sell)
+        {
+            if (Wallet_panel.InvokeRequired)
+            {
+                WalletArgReturningVoidDelegate d = new WalletArgReturningVoidDelegate(AddNewShare);
+                this.Invoke(d, new object[] { company_name, value, amount, unit_price, sell });
+            }
+            else
+            {
+                Wallet_panel.Controls.Add(company_name);
+                Wallet_panel.Controls.Add(unit_price);
+                Wallet_panel.Controls.Add(amount);
+                Wallet_panel.Controls.Add(value);
+                Wallet_panel.Controls.Add(sell);
+            }
         }
 
         private void Sell_btn_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("");//buy shares
+            MessageBox.Show("");//sell shares
         }
 
         private void Buy_btn_Click(object sender, EventArgs e)
         {
-            MessageBox.Show(e.ToString());//buy shares
+            var index = Array.IndexOf(buy_btn, sender);
+            MessageBox.Show(stocks_value[index].Text);//buy shares
         }
 
         private void new_acc_login_btn_Click(object sender, EventArgs e)
@@ -212,7 +254,7 @@ namespace StockExchange
             thread.Start();
         }
 
-        private List<Company> Get_data(string data)
+        private List<Company> Get_data(string data)//convert data from string into json and then fitting list of objects
         {
             JObject jdata = JObject.Parse(data);
             var item = jdata["Items"];
