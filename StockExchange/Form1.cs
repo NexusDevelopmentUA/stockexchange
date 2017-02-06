@@ -58,9 +58,10 @@ namespace StockExchange
             InitializeWallet(Auth.login, sql.Get_cash(Auth.login));
             client.OnError += Client_OnError;
             login.Text = Auth.login;
-            MessageBox.Show(Wallet_panel.Controls.Count.ToString());
+           
         }
-
+        //if something will happen during connectin to webserver
+        //error message will appear and all buttons will be disable
         private void Client_OnError(object sender, ErrorEventArgs e)
         {
             MessageBox.Show("Server error occuered!", "Error");
@@ -74,7 +75,8 @@ namespace StockExchange
             }
             error = true;
         }
-
+        //if everything okay, inititalise stocks
+        
         private void Client_OnMessage(object sender, MessageEventArgs e)
         {
             raw_companies_data = e.Data;
@@ -174,7 +176,7 @@ namespace StockExchange
                 AddNewShare(wallet_company_name[i], wallet_value[i], amount[i], unit_price[i], sell_btn[i]); //calling method to add new contorls for each share package in tableviewpanel
                 i++;
             }
-            this.cash.Text += Math.Round(double.Parse(cash),2) + " PLN";
+            this.cash.Text = Math.Round(double.Parse(cash),2) + " PLN";
         }
         private void AddNewStock(Label company_name, Label value, Button buy, int row)
         {
@@ -204,7 +206,7 @@ namespace StockExchange
 
                 foreach (var item in _companies)
                 {
-                    stocks_value[i].Text = Math.Round(item.Price,2).ToString();
+                    stocks_value[i].Text = Math.Round(item.Price,2).ToString()+" PLN";
                     stocks_unit[i] = item.Unit;
                     i++;
                 }
@@ -223,22 +225,57 @@ namespace StockExchange
             } 
            else
             {
+                wallet = sql.Get_Shares(login.Text);
+                string cash = sql.Get_cash(login.Text);
+                this.cash.Text = Math.Round(double.Parse(cash), 2) + " PLN";
                 int i = 0;
                 foreach (var item in wallet)
                 {
-                    foreach (var c in _companies)
+                    if (i >= Wallet_panel.Controls.Count/5)//checking if need to add new element to array and display it on the form
                     {
-                        string temp1, temp2;
-                        temp1 = c.Name.Replace(" ", "");//removing free spaces from database varchar values
-                        temp2 = item.Company_name.Replace(" ", "");
-                        if (temp1 == temp2)
+                        wallet_company_name[i] = new Label();
+                        amount[i] = new Label();
+                        unit_price[i] = new Label();
+                        wallet_value[i] = new Label();
+                        sell_btn[i] = new Button();
+                        sell_btn[i].Click += Sell_btn_Click;
+
+                        wallet_company_name[i].Text = item.Company_name;
+                        amount[i].Text = item.Amount.ToString();
+                        sell_btn[i].Text = "Sell";
+
+                        foreach (var c in _companies)
                         {
-                            unit_price[i].Text = c.Price.ToString();
-                            wallet_value[i].Text = (item.Amount * c.Price).ToString();
-                            break;
+                            string temp1, temp2;
+                            temp1 = c.Code.Replace(" ", "");//removing free spaces from database varchar values
+                            temp2 = item.Company_name.Replace(" ", "");
+                            if (temp1 == temp2)
+                            {
+                                unit_price[i].Text = c.Price.ToString();
+                                wallet_value[i].Text = (item.Amount * c.Price).ToString();
+                                break;
+                            }
                         }
+                        AddNewShare(wallet_company_name[i], wallet_value[i], amount[i], unit_price[i], sell_btn[i]);
                     }
-                    i++;
+                    else
+                    {
+                        wallet_company_name[i].Text = item.Company_name;
+                        amount[i].Text = item.Amount.ToString();
+                        foreach (var c in _companies)
+                        {
+                            string temp1, temp2;
+                            temp1 = c.Code.Replace(" ", "");//removing free spaces from database varchar values
+                            temp2 = item.Company_name.Replace(" ", "");
+                            if (temp1 == temp2)
+                            {
+                                unit_price[i].Text = c.Price.ToString();
+                                wallet_value[i].Text = (item.Amount * c.Price).ToString();
+                                break;
+                            }
+                        }
+                        i++;
+                    }
                 }
             }
         }
@@ -309,6 +346,25 @@ namespace StockExchange
         private void button1_Click(object sender, EventArgs e)
         {
             MessageBox.Show(stocks_company_name[3].Text);
+        }
+
+        public void Form_update()
+        {
+            Thread wallet_update = new Thread(() => Update_wallet_value());
+            wallet_update.Start();
+        }
+
+        private void Form1_Enter(object sender, EventArgs e)
+        {
+            Thread wallet_update = new Thread(() => Update_wallet_value());
+            wallet_update.Start();
+        }
+
+        private void Form1_Activated(object sender, EventArgs e)
+        {
+            Thread wallet_update = new Thread(() => Update_wallet_value());
+            wallet_update.Start();
+            Console.WriteLine("ACTIVATED");
         }
     }
 }

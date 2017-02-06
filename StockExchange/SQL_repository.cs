@@ -216,7 +216,6 @@ namespace StockExchange
                     i++;
                 }
             }
-
             catch(Exception e)
             {
                 Console.WriteLine(e.Message);

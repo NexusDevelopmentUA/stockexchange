@@ -42,11 +42,11 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(118, 29);
+            this.label1.Location = new System.Drawing.Point(85, 29);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(33, 13);
+            this.label1.Size = new System.Drawing.Size(110, 13);
             this.label1.TabIndex = 0;
-            this.label1.Text = "Login";
+            this.label1.Text = "Login (up to 20 chars)";
             // 
             // login_txt
             // 
@@ -65,11 +65,11 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(118, 71);
+            this.label2.Location = new System.Drawing.Point(88, 71);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(30, 13);
+            this.label2.Size = new System.Drawing.Size(107, 13);
             this.label2.TabIndex = 2;
-            this.label2.Text = "Pass";
+            this.label2.Text = "Pass (up to 18 chars)";
             // 
             // cash_txt
             // 
@@ -118,7 +118,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(285, 262);
+            this.ClientSize = new System.Drawing.Size(278, 262);
             this.Controls.Add(this.signup_btn);
             this.Controls.Add(this.count_txt);
             this.Controls.Add(this.label4);

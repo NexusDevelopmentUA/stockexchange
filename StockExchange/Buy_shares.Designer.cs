@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Buy_shares));
             this.label1 = new System.Windows.Forms.Label();
             this.unit_count = new System.Windows.Forms.Label();
             this.amount_txt = new System.Windows.Forms.TextBox();
@@ -78,6 +79,7 @@
             this.Controls.Add(this.amount_txt);
             this.Controls.Add(this.unit_count);
             this.Controls.Add(this.label1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Buy_shares";
             this.Text = "Buy_shares";
             this.ResumeLayout(false);

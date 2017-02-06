@@ -45,7 +45,8 @@ namespace StockExchange
                 else
                 {
                     cash -= cost;
-                    sql.Update_after_buy(current_login, cash, form.stocks_company_name[index].Text, int.Parse(amount_txt.Text));
+                    sql.Update_after_buy(current_login, cash, form.stocks_company_name[index].Text, count);
+                   // form.Form_update();
                     this.Close();
                 }
             }

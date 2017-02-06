@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.Stocks_panel = new System.Windows.Forms.TableLayoutPanel();
             this.Wallet_panel = new System.Windows.Forms.TableLayoutPanel();
             this.label2 = new System.Windows.Forms.Label();
@@ -45,9 +46,10 @@
             this.label7 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
-            this.cash = new System.Windows.Forms.Label();
+            this.label123 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
             this.update_time = new System.Windows.Forms.Label();
+            this.cash = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.SuspendLayout();
@@ -241,14 +243,14 @@
             this.label1.TabIndex = 0;
             this.label1.Text = "Company name";
             // 
-            // cash
+            // label123
             // 
-            this.cash.AutoSize = true;
-            this.cash.Location = new System.Drawing.Point(882, 374);
-            this.cash.Name = "cash";
-            this.cash.Size = new System.Drawing.Size(90, 13);
-            this.cash.TabIndex = 12;
-            this.cash.Text = "Avaliable money: ";
+            this.label123.AutoSize = true;
+            this.label123.Location = new System.Drawing.Point(882, 374);
+            this.label123.Name = "label123";
+            this.label123.Size = new System.Drawing.Size(90, 13);
+            this.label123.TabIndex = 12;
+            this.label123.Text = "Avaliable money: ";
             // 
             // label9
             // 
@@ -267,14 +269,23 @@
             this.update_time.Size = new System.Drawing.Size(0, 13);
             this.update_time.TabIndex = 14;
             // 
+            // cash
+            // 
+            this.cash.AutoSize = true;
+            this.cash.Location = new System.Drawing.Point(979, 374);
+            this.cash.Name = "cash";
+            this.cash.Size = new System.Drawing.Size(0, 13);
+            this.cash.TabIndex = 15;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1266, 399);
+            this.Controls.Add(this.cash);
             this.Controls.Add(this.update_time);
             this.Controls.Add(this.label9);
-            this.Controls.Add(this.cash);
+            this.Controls.Add(this.label123);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
@@ -283,8 +294,11 @@
             this.Controls.Add(this.Stocks_panel);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox3);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "Stock Exchange";
+            this.Activated += new System.EventHandler(this.Form1_Activated);
+            this.Enter += new System.EventHandler(this.Form1_Enter);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.groupBox3.ResumeLayout(false);
@@ -311,10 +325,11 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button new_acc_login_btn;
-        private System.Windows.Forms.Label cash;
+        private System.Windows.Forms.Label label123;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Label update_time;
         public System.Windows.Forms.Label login;
+        private System.Windows.Forms.Label cash;
     }
 }
 

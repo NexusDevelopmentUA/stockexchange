@@ -48,7 +48,7 @@ namespace StockExchange
             }
             SQL_repository sql = new SQL_repository();
             sql.SignUp(login, pass, cash, wallet);
-
+            Auth.login = login;
             Form1 form = new Form1();
             form.Show();
             this.Hide();

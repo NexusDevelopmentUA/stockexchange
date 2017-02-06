@@ -21,7 +21,16 @@ namespace StockExchange
             InitializeComponent();
             index = _index;
             string shares_name = form.wallet_company_name[index].Text;
-            stock_index = Array.IndexOf(form.stocks_company_name, shares_name);
+            string temp = form.wallet_company_name[index].Text;
+            temp.Replace(" ", "");
+            string[] values = new string[form.stocks_company_name.Count()];
+            int j = 0;
+            foreach(var item in form.stocks_company_name)
+            {
+                values[j] = item.Text;
+                j++;
+            }
+            stock_index = Array.IndexOf(values, temp);
             unit_count.Text += form.stocks_unit[stock_index].ToString();
         }
 
@@ -31,18 +40,20 @@ namespace StockExchange
             string tmp = form.stocks_value[index].Text.Replace("PLN", "");
             double cash = double.Parse(sql.Get_cash(Auth.login));
             double cost = form.stocks_unit[stock_index] * int.Parse(amount_txt.Text) * double.Parse(tmp);
+            int amount = int.Parse(amount_txt.Text) * form.stocks_unit[stock_index];
 
-            DialogResult result = MessageBox.Show("Are you sure you want sell " + amount_txt.Text + " shares for " + cost.ToString() + "PLN?", "ATTENTION", MessageBoxButtons.YesNo);
+            DialogResult result = MessageBox.Show("Are you sure you want sell " + amount + " shares for " + cost.ToString() + "PLN?", "ATTENTION", MessageBoxButtons.YesNo);
             if (result == DialogResult.Yes)
             {
-                if (int.Parse(amount_txt.Text) > int.Parse(form.amount[index].Text))
+                if (amount > int.Parse(form.amount[index].Text))
                 {
                     MessageBox.Show("Not enough shares", "Error");
                 }
                 else
                 {
                     cash += cost;
-                    sql.Update_after_sell(current_login, cash, form.stocks_company_name[stock_index].Text, int.Parse(amount_txt.Text));
+                    sql.Update_after_sell(current_login, cash, form.stocks_company_name[stock_index].Text, amount);
+                   // form.Form_update();
                     this.Close();
                 }
             }
