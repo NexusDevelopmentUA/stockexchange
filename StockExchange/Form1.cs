@@ -366,5 +366,10 @@ namespace StockExchange
             wallet_update.Start();
             Console.WriteLine("ACTIVATED");
         }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("In development");
+        }
     }
 }
