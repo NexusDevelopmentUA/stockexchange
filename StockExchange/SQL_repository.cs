@@ -92,8 +92,10 @@ namespace StockExchange
             List<Shares> wallet = new List<Shares>();
             SqlCommand get_id = new SqlCommand("SELECT Id FROM users WHERE login = @0",conn);
             get_id.Parameters.Add(new SqlParameter("@0", login));
-            SqlCommand get_shares = new SqlCommand("SELECT company_name, amount FROM wallets WHERE id_user=(@id_user)", conn);
-
+            SqlCommand get_shares = new SqlCommand("SELECT company_id, amount FROM wallets WHERE id_user=(@id_user)", conn);
+            SqlCommand get_company_name = new SqlCommand("SELECT company_name FROM companies WHERE Id_company=(@id_company)", conn);
+            //I have done all of this not with UDF because of some sort of bug on server i can't create UDF that will return table
+            //
             try
             {
                 conn.Open();
@@ -107,9 +109,11 @@ namespace StockExchange
                     {
                         switch (column.ColumnName)
                         {
-                            case "company_name":
+                            case "company_id":
                                 {
                                     company_name = row[column].ToString();
+                                    //get_company_name.Parameters.Add(new SqlParameter("@id_company", tmp));
+                                    //company_name=get_company_name.ExecuteScalar().ToString();
                                     break;
                                 }
                             case "amount":
@@ -138,14 +142,87 @@ namespace StockExchange
             string cash="";
             try
             {
-                command.Connection.Open();
+                conn.Open();
                 cash = command.ExecuteScalar().ToString();
             }
             catch(Exception e)
             {
                 Console.WriteLine(e.Message);
             }
+            conn.Close();
             return cash;
+        }
+
+        public void Update_after_buy(string login, double cash, string company_name, int amount)
+        {
+            SqlConnection conn = new SqlConnection(conn_str);
+            SqlCommand command = new SqlCommand("update_shares", conn);
+            command.Parameters.AddWithValue("@login", login);
+            command.Parameters.AddWithValue("@cash", cash);
+            command.Parameters.AddWithValue("@company_name", company_name);
+            command.Parameters.AddWithValue("@amount", amount);
+            try
+            {
+                conn.Open();
+                command.CommandType = CommandType.StoredProcedure;
+                command.ExecuteNonQuery();
+
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
+
+        public void Update_after_sell(string login, double cash, string company_name, int amount)
+        {
+            SqlConnection conn = new SqlConnection(conn_str);
+            SqlCommand command = new SqlCommand("update_shares_sell", conn);
+            command.Parameters.AddWithValue("@login", login);
+            command.Parameters.AddWithValue("@cash", cash);
+            command.Parameters.AddWithValue("@company_name", company_name);
+            command.Parameters.AddWithValue("@amount", amount);
+            try
+            {
+                conn.Open();
+                command.CommandType = CommandType.StoredProcedure;
+                command.ExecuteNonQuery();
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            conn.Close();
+        }
+        public int[] Get_current_shares_amount()
+        {
+            SqlConnection conn = new SqlConnection(conn_str);
+            SqlCommand command = new SqlCommand("SELECT shares_amount FROM companies",conn);
+            SqlDataAdapter adapter = new SqlDataAdapter();
+            DataSet dset = new DataSet();
+            int[] output=new int[1];
+            int i = 0;
+
+            try
+            {
+                conn.Open();
+                adapter.SelectCommand = command;
+                adapter.Fill(dset, "Main");
+                output = new int[dset.Tables["Main"].Rows.Count];
+                foreach (DataRow row in dset.Tables["Main"].Rows)
+                {
+                    output[i] = int.Parse(row["shares_amount"].ToString());
+                    i++;
+                }
+            }
+
+            catch(Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            conn.Close();
+            return output;
         }
     }
 

@@ -25,15 +25,16 @@ namespace StockExchange
         delegate void UpdateWalletArgReturnVoidDelegate();//update all wallet after sell operation
 
         //Arrays of controls for stocks
-        Label[] stocks_company_name;
-        Label[] stocks_value;
-        int[] stocks_unit;
+        public Label[] stocks_company_name;
+        public Label[] stocks_value;
         Button[] buy_btn;
+        public int[] stocks_unit;
+        public int[] shares_amount;
 
         //Array of controls for wallet
-        Label[] wallet_company_name;
+        public Label[] wallet_company_name;
         Label[] unit_price;
-        Label[] amount;
+        public Label[] amount;
         Label[] wallet_value;
         Button[] sell_btn;
 
@@ -42,6 +43,7 @@ namespace StockExchange
         private WebSocket client;
         const string host = "ws://webtask.future-processing.com:8068/ws/stocks";
         bool initialized = false;
+        bool error = false;
         List<Company> _companies;
         List<Shares> wallet;
         string raw_companies_data;
@@ -49,10 +51,28 @@ namespace StockExchange
         public Form1()
         {
             InitializeComponent();
+            shares_amount= sql.Get_current_shares_amount();
             client = new WebSocket(host);
             client.Connect();
             client.OnMessage += Client_OnMessage;
             InitializeWallet(Auth.login, sql.Get_cash(Auth.login));
+            client.OnError += Client_OnError;
+            login.Text = Auth.login;
+            MessageBox.Show(Wallet_panel.Controls.Count.ToString());
+        }
+
+        private void Client_OnError(object sender, ErrorEventArgs e)
+        {
+            MessageBox.Show("Server error occuered!", "Error");
+            foreach(var item in sell_btn)
+            {
+                item.Enabled = false;
+            }
+            foreach(var item in buy_btn)
+            {
+                item.Enabled = false;
+            }
+            error = true;
         }
 
         private void Client_OnMessage(object sender, MessageEventArgs e)
@@ -72,6 +92,20 @@ namespace StockExchange
                 thread = new Thread(() => Update_wallet_value());//updating wallet values
                 thread.Start();
             }
+            if (error == true)
+            {
+                MessageBox.Show("Session established");
+                foreach (var item in sell_btn)
+                {
+                    item.Enabled = true;
+                }
+                foreach (var item in buy_btn)
+                {
+                    item.Enabled = true;
+                }
+                error = false;
+            }
+            
         }
 
         private void InitalizeStocks(List<Company> _companies) //initialise stocks with latest data from server
@@ -89,14 +123,15 @@ namespace StockExchange
                 buy_btn[i] = new Button();
 
 
-                stocks_company_name[i].Text = item.Name;
-                stocks_value[i].Text = item.Price.ToString();//need to round to 2 digits after point
+                stocks_company_name[i].Text = item.Code;
+                stocks_value[i].Text = Math.Round(item.Price,2).ToString()+" PLN";//need to round to 2 digits after point
                 stocks_unit[i] = item.Unit;
                 buy_btn[i].Text = "Buy";
                 buy_btn[i].Click += Buy_btn_Click;
                 AddNewStock(stocks_company_name[i], stocks_value[i], buy_btn[i], i); //calling method to add new contorls for each stock on tableviewpanel
                 i++;
             }
+            
             DateTime time = DateTime.Now;
             update_time.Text = time.Hour.ToString() +":"+ time.Minute.ToString() + ":" + time.Second.ToString();
             initialized = true;
@@ -127,19 +162,19 @@ namespace StockExchange
                 foreach (var c in _companies)
                 {
                     string temp1, temp2;
-                    temp1 = c.Name.Replace(" ", "");//removing free spaces from database varchar values
+                    temp1 = c.Code.Replace(" ", "");//removing free spaces from database varchar values
                     temp2 = item.Company_name.Replace(" ", "");
                     if (temp1 == temp2)
                     {
-                        unit_price[i].Text = c.Price.ToString();
-                        wallet_value[i].Text = (item.Amount * c.Price).ToString();
+                        unit_price[i].Text = Math.Round(c.Price,2).ToString()+" PLN";
+                        wallet_value[i].Text = Math.Round((item.Amount * c.Price),2).ToString()+" PLN";
                         break;
                     }
                 }
                 AddNewShare(wallet_company_name[i], wallet_value[i], amount[i], unit_price[i], sell_btn[i]); //calling method to add new contorls for each share package in tableviewpanel
                 i++;
             }
-            this.cash.Text += cash + " PLN";
+            this.cash.Text += Math.Round(double.Parse(cash),2) + " PLN";
         }
         private void AddNewStock(Label company_name, Label value, Button buy, int row)
         {
@@ -169,10 +204,11 @@ namespace StockExchange
 
                 foreach (var item in _companies)
                 {
-                    stocks_value[i].Text = item.Price.ToString();//need to round to 2 digits after point
+                    stocks_value[i].Text = Math.Round(item.Price,2).ToString();
                     stocks_unit[i] = item.Unit;
                     i++;
                 }
+                sql.Get_current_shares_amount();
                 DateTime time = DateTime.Now;
                 update_time.Text = time.Hour.ToString() + ":" + time.Minute.ToString() + ":" + time.Second.ToString();
             }
@@ -226,13 +262,16 @@ namespace StockExchange
 
         private void Sell_btn_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("");//sell shares
+            var index = Array.IndexOf(sell_btn, sender);
+            Sell_shares form = new Sell_shares(index);
+            form.Show();
         }
 
         private void Buy_btn_Click(object sender, EventArgs e)
         {
             var index = Array.IndexOf(buy_btn, sender);
-            MessageBox.Show(stocks_value[index].Text);//buy shares
+            Buy_shares form = new Buy_shares(index);
+            form.Show();
         }
 
         private void new_acc_login_btn_Click(object sender, EventArgs e)

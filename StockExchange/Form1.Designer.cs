@@ -37,6 +37,7 @@
             this.button2 = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.login = new System.Windows.Forms.Label();
             this.new_acc_login_btn = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
@@ -59,9 +60,17 @@
             this.Stocks_panel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 123F));
             this.Stocks_panel.Location = new System.Drawing.Point(15, 101);
             this.Stocks_panel.Name = "Stocks_panel";
-            this.Stocks_panel.RowCount = 2;
-            this.Stocks_panel.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.Stocks_panel.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.Stocks_panel.RowCount = 10;
+            this.Stocks_panel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
+            this.Stocks_panel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
+            this.Stocks_panel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
+            this.Stocks_panel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
+            this.Stocks_panel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
+            this.Stocks_panel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
+            this.Stocks_panel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.Stocks_panel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.Stocks_panel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.Stocks_panel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.Stocks_panel.Size = new System.Drawing.Size(481, 286);
             this.Stocks_panel.TabIndex = 1;
             // 
@@ -78,9 +87,9 @@
             this.Wallet_panel.Location = new System.Drawing.Point(684, 101);
             this.Wallet_panel.Name = "Wallet_panel";
             this.Wallet_panel.RowCount = 2;
-            this.Wallet_panel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.Wallet_panel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.Wallet_panel.Size = new System.Drawing.Size(544, 60);
+            this.Wallet_panel.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.Wallet_panel.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.Wallet_panel.Size = new System.Drawing.Size(544, 264);
             this.Wallet_panel.TabIndex = 2;
             // 
             // label2
@@ -132,7 +141,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(931, 16);
+            this.label5.Location = new System.Drawing.Point(900, 16);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(60, 13);
             this.label5.TabIndex = 8;
@@ -142,6 +151,7 @@
             // 
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox1.Controls.Add(this.login);
             this.groupBox1.Controls.Add(this.new_acc_login_btn);
             this.groupBox1.Controls.Add(this.log_out_btn);
             this.groupBox1.Controls.Add(this.button2);
@@ -152,6 +162,14 @@
             this.groupBox1.TabIndex = 9;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Stocks";
+            // 
+            // login
+            // 
+            this.login.AutoSize = true;
+            this.login.Location = new System.Drawing.Point(966, 16);
+            this.login.Name = "login";
+            this.login.Size = new System.Drawing.Size(0, 13);
+            this.login.TabIndex = 10;
             // 
             // new_acc_login_btn
             // 
@@ -182,7 +200,7 @@
             this.groupBox3.Controls.Add(this.label1);
             this.groupBox3.Location = new System.Drawing.Point(674, 61);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(564, 278);
+            this.groupBox3.Size = new System.Drawing.Size(564, 310);
             this.groupBox3.TabIndex = 11;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Wallet";
@@ -296,6 +314,7 @@
         private System.Windows.Forms.Label cash;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Label update_time;
+        public System.Windows.Forms.Label login;
     }
 }
 

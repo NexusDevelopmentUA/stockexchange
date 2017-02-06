@@ -66,6 +66,12 @@
     <Compile Include="Auth.Designer.cs">
       <DependentUpon>Auth.cs</DependentUpon>
     </Compile>
+    <Compile Include="Buy_shares.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Buy_shares.Designer.cs">
+      <DependentUpon>Buy_shares.cs</DependentUpon>
+    </Compile>
     <Compile Include="Company.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
@@ -76,6 +82,12 @@
     <Compile Include="GetData.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Sell_shares.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Sell_shares.Designer.cs">
+      <DependentUpon>Sell_shares.cs</DependentUpon>
+    </Compile>
     <Compile Include="Shares.cs" />
     <Compile Include="SignUp.cs">
       <SubType>Form</SubType>
@@ -95,6 +107,9 @@
     <EmbeddedResource Include="Auth.resx">
       <DependentUpon>Auth.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Buy_shares.resx">
+      <DependentUpon>Buy_shares.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
@@ -107,6 +122,9 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="Sell_shares.resx">
+      <DependentUpon>Sell_shares.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="SignUp.resx">
       <DependentUpon>SignUp.cs</DependentUpon>
     </EmbeddedResource>
